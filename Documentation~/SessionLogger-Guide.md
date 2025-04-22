@@ -5,6 +5,7 @@
 Hey there! This guide will walk you through Session Logger, a handy Unity package for tracking player sessions in your games and apps. This tool lets you collect all sorts of useful gameplay data, performance metrics, and send everything to a server for deeper analysis.
 
 With Session Logger, you can:
+
 - See how players are interacting with your game
 - Track when important actions are completed
 - Spot performance issues before they become problems
@@ -12,9 +13,8 @@ With Session Logger, you can:
 
 ## Requirements
 
-- Unity 2021.3 or newer
-- Works with all Unity-supported platforms (but it's especially great for VR apps on Oculus Quest)
-- Needs at least .NET Standard 2.0
+- Unity 6000.0 or newer
+- Works with all Unity-supported platforms
 
 ## Installation
 
@@ -22,14 +22,8 @@ With Session Logger, you can:
 
 1. Open Unity and your project
 2. Go to Window > Package Manager
-3. Click the "+" button and select "Add package from disk..."
-4. Navigate to the SessionLogger folder and select the `package.json` file
-5. Click "Open" to add the package to your project
-
-### Manual Installation
-
-1. Copy the SessionLogger folder into your Unity project's "Packages" directory
-2. Restart Unity or refresh package references (through Package Manager > Reset packages to defaults)
+3. Click the "+" button and select "Install package from git URL..."
+4. [GitHub - inimart/SessionLogger: Useful Session Logger for Unity3D](https://github.com/inimart/SessionLogger.git)
 
 ## Getting Started
 
@@ -44,19 +38,23 @@ With Session Logger, you can:
 Select the asset you created and in the Inspector panel, configure:
 
 - **Editor Settings**: how logging works in the Unity Editor
+  
   - `saveLocalJson`: save logs as JSON files locally
   - `sendToServer`: send logs to your remote server
 
 - **Build Settings**: how logging works in your built game
+  
   - `saveLocalJson`: save logs as JSON files locally
   - `sendToServer`: send logs to your remote server
 
 - **Server Configuration**:
+  
   - `serverUrl`: URL of the server that will receive your logs
   - `serverApiKey`: API key for authentication (optional)
   - `serverApiKeyHeader`: HTTP header name for the API key (default: "X-API-Key")
 
 - **Session Actions**: define all the actions you want to track in your game
+  
   - Add meaningful names to actions (e.g., "TutorialComplete", "LevelStart", "ItemCollected")
 
 ### 3. Add the SessionLogger Component

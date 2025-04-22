@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) [Year] [Copyright Holder]
+Copyright (c) 2025 Inimart - Luca Palmili
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

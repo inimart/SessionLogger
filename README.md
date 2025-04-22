@@ -16,16 +16,10 @@ A Unity package for tracking and analyzing session data in your VR/AR applicatio
 
 ### Using Unity Package Manager
 
-1. Open your Unity project
-2. Go to Window > Package Manager
-3. Click the "+" button and select "Add package from disk..."
-4. Navigate to the SessionLogger folder and select the `package.json` file
-5. Click "Add"
-
-### Manual Installation
-
-1. Copy the entire SessionLogger folder into your Unity project's "Packages" directory
-2. Restart Unity or refresh the package list
+* Open Unity and your project
+* Go to Window > Package Manager
+* Click the "+" button and select "Install package from git URL..."
+* [GitHub - inimart/SessionLogger: Useful Session Logger for Unity3D
 
 ## Quick Setup
 
@@ -57,12 +51,6 @@ For detailed instructions, advanced examples, and troubleshooting information, c
 ## Requirements
 
 - Unity 2021.3 or newer
-- Compatible with all platforms, optimized for Oculus Quest
-- .NET Standard 2.0
-
-## Contributing
-
-To contribute to the project, contact the authors or open an issue on GitHub.
 
 ## License
 
