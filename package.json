@@ -1,0 +1,22 @@
+{
+  "name": "com.inimart.sessionlogger",
+  "version": "1.0.0",
+  "displayName": "Session Logger",
+  "description": "A framework for logging session data in Unity applications",
+  "unity": "2021.3",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "keywords": [
+    "logging",
+    "analytics",
+    "sessions"
+  ],
+  "author": {
+    "name": "Luca Palmili",
+    "email": "inimartdesign@gmail.com",
+    "url": "https://www.inimart.com"
+  },
+  "dependencies": {
+  }
+} 
