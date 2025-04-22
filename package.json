@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "displayName": "Session Logger",
   "description": "A framework for logging session data in Unity applications",
-  "unity": "2021.3",
+  "unity": "60000.0.44f1",
   "documentationUrl": "",
   "changelogUrl": "",
   "licensesUrl": "",
@@ -13,7 +13,7 @@
     "sessions"
   ],
   "author": {
-    "name": "Luca Palmili",
+    "name": "Inimart",
     "email": "inimartdesign@gmail.com",
     "url": "https://www.inimart.com"
   },
