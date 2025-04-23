@@ -1,6 +1,6 @@
 # Session Logger
 
-A Unity package for tracking and analyzing session data in your VR/AR applications.
+A Unity package for tracking and analyzing session data in your applications.
 
 ## Features
 
@@ -19,7 +19,7 @@ A Unity package for tracking and analyzing session data in your VR/AR applicatio
 * Open Unity and your project
 * Go to Window > Package Manager
 * Click the "+" button and select "Install package from git URL..."
-* [GitHub - inimart/SessionLogger: Useful Session Logger for Unity3D
+* [https://github.com/inimart/SessionLogger.git]
 
 ## Quick Setup
 
@@ -54,4 +54,4 @@ For detailed instructions, advanced examples, and troubleshooting information, c
 
 ## License
 
-This package is distributed under the MIT License. See [LICENSE.md](LICENSE.md) for details. 
+MIT – do what you want, attribution appreciated.
