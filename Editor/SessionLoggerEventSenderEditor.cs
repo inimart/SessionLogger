@@ -36,9 +36,9 @@ namespace Inimart.SessionLogger.Editor
             }
 
             // Populate action names if config is loaded
-            if (config != null && config.ActionNames != null)
+            if (config != null && config.EventsNames != null)
             {
-                actionNames = config.ActionNames;
+                actionNames = config.EventsNames;
             }
             else
             {
@@ -126,7 +126,7 @@ namespace Inimart.SessionLogger.Editor
                 }
                 else
                 {
-                    EditorGUILayout.HelpBox("No actions defined in SessionLoggerSetup.ActionNames array.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("No events defined in SessionLoggerSetup.EventsNames array.", MessageType.Warning);
                     selectedIndex = -1;
                     actionToLogProp.stringValue = "";
                 }

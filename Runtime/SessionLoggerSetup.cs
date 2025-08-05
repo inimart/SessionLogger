@@ -32,9 +32,13 @@ namespace Inimart.SessionLogger
         [Tooltip("(Optional) The name of the header field for the API key (e.g., 'X-API-Key').")]
         public string serverApiKeyHeader = "X-API-Key";
 
-        [Header("Session Actions")]
-        [Tooltip("Define the names of all possible actions to be logged in this session type.")]
-        public string[] ActionNames = new string[] { // Example default actions
+        [Header("Session Configuration")]
+        [Tooltip("Time interval in seconds between automatic session log saves. Set to 0 to disable periodic saving.")]
+        public float UpdateLogTime = 30f; // Default: Save every 30 seconds
+        
+        [Header("Session Events")]
+        [Tooltip("Define the names of all possible events to be logged in this session type.")]
+        public string[] EventsNames = new string[] { // Example default events
             "Scene_00_Loaded",
             "Scene_01_Loaded",
             "TutorialCompleted",

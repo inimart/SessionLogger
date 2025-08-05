@@ -1,6 +1,6 @@
 {
   "name": "com.inimart.sessionlogger",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "displayName": "Session Logger",
   "description": "A framework for logging session data in Unity applications",
   "unity": "2021.3",

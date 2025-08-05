@@ -55,12 +55,12 @@ namespace Inimart.SessionLogger
             {
                 Debug.LogWarning("No action name configured in the SessionLoggerLogEventSender component. Please configure in Inspector.");
             }
-            else if (config.ActionNames != null)
+            else if (config.EventsNames != null)
             {
                 bool found = false;
-                foreach (string action in config.ActionNames)
+                foreach (string eventName in config.EventsNames)
                 {
-                    if (action == actionToLog)
+                    if (eventName == actionToLog)
                     {
                         found = true;
                         break;
@@ -69,7 +69,7 @@ namespace Inimart.SessionLogger
                 
                 if (!found)
                 {
-                    Debug.LogWarning($"The configured action '{actionToLog}' is not in the SessionLoggerSetup.ActionNames array. This may result in inaccurate completion percentages.");
+                    Debug.LogWarning($"The configured action '{actionToLog}' is not in the SessionLoggerSetup.EventsNames array. This may result in inaccurate completion percentages.");
                 }
             }
             

@@ -40,10 +40,13 @@ namespace Inimart.SessionLogger
         private HashSet<string> uniqueLogs = new();
         // Dictionary uses string keys now
         private Dictionary<string, int> sessionActionCounts = new();
+        // Dictionary for custom events
+        private Dictionary<string, string> customEvents = new();
         private string fileTimestamp;
         // Cached config for the current mode
         private SessionLoggerSetup.ModeConfig currentModeConfig;
         private string currentServerUrl;
+        private Coroutine periodicSaveCoroutine;
 
         // Shutdown handling variables
         private bool isQuitting = false;
@@ -52,10 +55,17 @@ namespace Inimart.SessionLogger
         [Tooltip("Maximum seconds to wait for log sending before forcing application to quit")]
         public float maxQuitWaitTime = 5f; // Maximum 5 seconds wait by default
 
-        private string GetLogFilePath(string timestamp)
+        private string GetSessionFileName()
+        {
+            // Format: DD_MM_YY_HH_MM.json
+            DateTime sessionStart = DateTime.Parse(sessionStartTime);
+            return sessionStart.ToString("dd_MM_yy_HH_mm") + ".json";
+        }
+        
+        private string GetLogFilePath()
         {
             // Ensure persistentDataPath is used for cross-platform compatibility
-            return Path.Combine(Application.persistentDataPath, timestamp + "_SessionLog.json");
+            return Path.Combine(Application.persistentDataPath, GetSessionFileName());
         }
 
         private void Awake()
@@ -107,6 +117,12 @@ namespace Inimart.SessionLogger
             {
                 CheckForUnsentLogs();
             }
+            
+            // Start periodic saving if configured
+            if (config.UpdateLogTime > 0)
+            {
+                periodicSaveCoroutine = StartCoroutine(PeriodicSaveCoroutine());
+            }
         }
 
         private void OnDestroy()
@@ -116,6 +132,12 @@ namespace Inimart.SessionLogger
             
             // Unregister log handler
             Application.logMessageReceivedThreaded -= HandleLog;
+            
+            // Stop periodic save coroutine
+            if (periodicSaveCoroutine != null)
+            {
+                StopCoroutine(periodicSaveCoroutine);
+            }
         }
 
         private bool HandleApplicationWantsToQuit()
@@ -210,24 +232,24 @@ namespace Inimart.SessionLogger
             highFpsData = null;
             lowFpsData = null;
 
-            // Initialize action counts dictionary from config.ActionNames
-            if (config != null && config.ActionNames != null)
+            // Initialize action counts dictionary from config.EventsNames
+            if (config != null && config.EventsNames != null)
             {
-                foreach (string actionName in config.ActionNames)
+                foreach (string eventName in config.EventsNames)
                 {
-                    if (!string.IsNullOrEmpty(actionName) && !sessionActionCounts.ContainsKey(actionName))
+                    if (!string.IsNullOrEmpty(eventName) && !sessionActionCounts.ContainsKey(eventName))
                     {
-                        sessionActionCounts[actionName] = 0;
+                        sessionActionCounts[eventName] = 0;
                     }
-                    else if (sessionActionCounts.ContainsKey(actionName))
+                    else if (sessionActionCounts.ContainsKey(eventName))
                     {
-                        Debug.LogWarning($"SessionLoggerSetup: Duplicate action name '{actionName}' detected in ActionNames. Only the first occurrence will be used.");
+                        Debug.LogWarning($"SessionLoggerSetup: Duplicate event name '{eventName}' detected in EventsNames. Only the first occurrence will be used.");
                     }
                 }
             }
             else
             {
-                Debug.LogError("SessionLogger config or ActionNames is null during initialization!");
+                Debug.LogError("SessionLogger config or EventsNames is null during initialization!");
             }
         }
 
@@ -244,7 +266,7 @@ namespace Inimart.SessionLogger
             else
             {
                 // Log a warning if the event name is not pre-defined in the config
-                Debug.LogWarning($"SessionLogger: Logged event '{eventName}' which was not defined in SessionLoggerSetup.ActionNames. It will be logged but not included in completion percentage unless added to setup.");
+                Debug.LogWarning($"SessionLogger: Logged event '{eventName}' which was not defined in SessionLoggerSetup.EventsNames. It will be logged but not included in completion percentage unless added to setup.");
             }
 
             logEntries.Add(new LogEntry
@@ -253,6 +275,28 @@ namespace Inimart.SessionLogger
                 type = eventName,
                 message = "SessionAction"
             });
+        }
+        
+        // New method to log custom events with values
+        public void LogCustomEvent(string eventName, string eventValue, bool overwrite)
+        {
+            if (!enabled) return;
+            
+            if (string.IsNullOrEmpty(eventName))
+            {
+                Debug.LogWarning("SessionLogger: LogCustomEvent called with empty eventName.");
+                return;
+            }
+            
+            if (overwrite || !customEvents.ContainsKey(eventName))
+            {
+                customEvents[eventName] = eventValue ?? string.Empty;
+                Debug.Log($"SessionLogger: Custom event logged - {eventName}: {eventValue}");
+            }
+            else
+            {
+                Debug.Log($"SessionLogger: Custom event '{eventName}' already exists with value '{customEvents[eventName]}'. Use overwrite=true to update.");
+            }
         }
 
         private void HandleLog(string condition, string stackTrace, LogType type)
@@ -269,6 +313,24 @@ namespace Inimart.SessionLogger
                 type = type.ToString(),
                 message = condition + (type == LogType.Exception || type == LogType.Error ? "\nStackTrace: " + stackTrace : "")
             });
+        }
+        
+        private IEnumerator PeriodicSaveCoroutine()
+        {
+            if (!enabled || config.UpdateLogTime <= 0) yield break;
+            
+            Debug.Log($"SessionLogger: Starting periodic save every {config.UpdateLogTime} seconds.");
+            
+            while (true)
+            {
+                yield return new WaitForSecondsRealtime(config.UpdateLogTime);
+                
+                if (enabled && (currentModeConfig.saveLocalJson || currentModeConfig.sendToServer))
+                {
+                    Debug.Log("SessionLogger: Performing periodic save.");
+                    SaveAndSend();
+                }
+            }
         }
 
         private IEnumerator FpsSamplingCoroutine()
@@ -425,7 +487,14 @@ namespace Inimart.SessionLogger
                 }
             }
 
-            float completedPercentage = (totalDefinedActionTypes > 0) ? (float)completedActionCount / totalDefinedActionTypes : 0f;
+            float completedPercentage = (totalDefinedEventTypes > 0) ? (float)completedEventCount / totalDefinedEventTypes : 0f;
+            
+            // Convert custom events dictionary to list
+            List<CustomEvent> customEventsList = new List<CustomEvent>();
+            foreach (var kvp in customEvents)
+            {
+                customEventsList.Add(new CustomEvent { eventName = kvp.Key, eventValue = kvp.Value });
+            }
 
             SessionData data = new()
             {
@@ -438,11 +507,12 @@ namespace Inimart.SessionLogger
                 avgLowFps = (lowestAvgFps == float.MaxValue) ? null : lowFpsData,
                 logs = logEntries,
                 ActionsReceived = actionsReceivedList,
-                Completed_Percentage = completedPercentage
+                Completed_Percentage = completedPercentage,
+                customEvents = customEventsList
             };
 
             string json = JsonUtility.ToJson(data, true);
-            filePath = GetLogFilePath(fileTimestamp);
+            filePath = GetLogFilePath();
             fileSaved = false;
 
             if (currentModeConfig.saveLocalJson)
@@ -529,6 +599,13 @@ namespace Inimart.SessionLogger
         private class FpsData { public float avg; public Vector3 position; public Quaternion rotation; public string scene; public FpsData(float a, Vector3 p, Quaternion r, string s) { avg = a; position = p; rotation = r; scene = s; } }
 
         [Serializable]
+        public struct CustomEvent
+        {
+            public string eventName;
+            public string eventValue;
+        }
+        
+        [Serializable]
         private class SessionData
         {
             public string appName;
@@ -541,6 +618,7 @@ namespace Inimart.SessionLogger
             public List<LogEntry> logs;
             public List<SerializableActionCount> ActionsReceived;
             public float Completed_Percentage;
+            public List<CustomEvent> customEvents;
         }
     }
 } 
