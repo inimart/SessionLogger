@@ -469,12 +469,12 @@ namespace Inimart.SessionLogger
 
             // Prepare ActionsReceived list and calculate completion percentage
             List<SerializableActionCount> actionsReceivedList = new List<SerializableActionCount>();
-            int totalDefinedActionTypes = (config != null && config.ActionNames != null) ? config.ActionNames.Length : 0;
+            int totalDefinedActionTypes = (config != null && config.EventsNames != null) ? config.EventsNames.Length : 0;
             int completedActionCount = 0;
 
             if (totalDefinedActionTypes > 0)
             {
-                foreach (string actionName in config.ActionNames)
+                foreach (string actionName in config.EventsNames)
                 {
                     if (string.IsNullOrEmpty(actionName)) continue;
 
@@ -487,7 +487,7 @@ namespace Inimart.SessionLogger
                 }
             }
 
-            float completedPercentage = (totalDefinedEventTypes > 0) ? (float)completedEventCount / totalDefinedEventTypes : 0f;
+            float completedPercentage = (totalDefinedActionTypes > 0) ? (float)completedActionCount / totalDefinedActionTypes : 0f;
             
             // Convert custom events dictionary to list
             List<CustomEvent> customEventsList = new List<CustomEvent>();
