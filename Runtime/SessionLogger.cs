@@ -273,7 +273,7 @@ namespace Inimart.SessionLogger
             {
                 timestamp = DateTime.UtcNow.ToString("o"),
                 type = eventName,
-                message = "SessionAction"
+                message = "SessionEvent"
             });
         }
         
@@ -297,6 +297,13 @@ namespace Inimart.SessionLogger
             {
                 Debug.Log($"SessionLogger: Custom event '{eventName}' already exists with value '{customEvents[eventName]}'. Use overwrite=true to update.");
             }
+            
+            logEntries.Add(new LogEntry
+            {
+                timestamp = DateTime.UtcNow.ToString("o"),
+                type = $"{eventName} [{eventValue}] overwrite:{overwrite}",
+                message = "SessionCustomEvent"
+            });
         }
 
         private void HandleLog(string condition, string stackTrace, LogType type)
