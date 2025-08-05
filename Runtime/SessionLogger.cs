@@ -305,6 +305,19 @@ namespace Inimart.SessionLogger
                 message = "SessionCustomEvent"
             });
         }
+        
+        // Public method to add custom log entries
+        public void AddLogEntry(string type, string message)
+        {
+            if (!enabled) return;
+            
+            logEntries.Add(new LogEntry
+            {
+                timestamp = DateTime.UtcNow.ToString("o"),
+                type = type,
+                message = message
+            });
+        }
 
         private void HandleLog(string condition, string stackTrace, LogType type)
         {
