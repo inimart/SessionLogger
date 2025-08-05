@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Inimart.SessionLogger.Debug
+namespace Inimart.SessionLogger
 {
     /// <summary>
     /// Debug component to test LogEvent functionality with predefined events from SessionLoggerSetup
