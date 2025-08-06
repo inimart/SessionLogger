@@ -5,26 +5,26 @@ using Inimart.SessionLogger;
 
 namespace Inimart.SessionLogger.Editor
 {
-    [CustomEditor(typeof(SendEventDebug))]
-    public class SendEventDebugEditor : UnityEditor.Editor
+    [CustomEditor(typeof(SendEvent))]
+    public class SendEventEditor : UnityEditor.Editor
     {
         private SerializedProperty selectedEventIndexProp;
+        private SerializedProperty fireOnEnableProp;
         
         void OnEnable()
         {
             selectedEventIndexProp = serializedObject.FindProperty("selectedEventIndex");
+            fireOnEnableProp = serializedObject.FindProperty("fireOnEnable");
         }
         
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
             
-            SendEventDebug sendEventDebug = (SendEventDebug)target;
-            
-            EditorGUILayout.Space();
+            SendEvent sendEvent = (SendEvent)target;
             
             // Get available event names
-            string[] eventNames = sendEventDebug.GetEventNames();
+            string[] eventNames = sendEvent.GetEventNames();
             
             if (eventNames.Length == 0)
             {
@@ -51,23 +51,15 @@ namespace Inimart.SessionLogger.Editor
                 }
                 
                 // Show currently selected event
-                EditorGUILayout.HelpBox($"Selected: {sendEventDebug.GetSelectedEventName()}", MessageType.Info);
+                EditorGUILayout.HelpBox($"Selected: {sendEvent.GetSelectedEventName()}", MessageType.Info);
             }
             
             EditorGUILayout.Space();
             
-            // Draw the send button
-            GUI.enabled = eventNames.Length > 0 && Application.isPlaying;
-            if (GUILayout.Button("Send Event", GUILayout.Height(30)))
-            {
-                sendEventDebug.SendEvent();
-            }
-            GUI.enabled = true;
-            
-            if (!Application.isPlaying)
-            {
-                EditorGUILayout.HelpBox("Enter Play Mode to send events.", MessageType.Info);
-            }
+            // Auto send option
+            EditorGUILayout.LabelField("Auto Send", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(fireOnEnableProp, new GUIContent("Fire On Enable", 
+                "Automatically send the event when this GameObject is enabled"));
             
             serializedObject.ApplyModifiedProperties();
         }
